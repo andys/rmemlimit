@@ -14,6 +14,8 @@ instead, in a background thread.
 
     gem 'rmemlimit' # in your Gemfile
 
+    Rmemlimit.setup # somewhere in app startup, or after forking
+
 
 #### Set a memory limit for GC (requires linux /proc)
 
@@ -34,4 +36,11 @@ kill itself when it passes a threshold, you can do limit to say 1000MB:
     Rmemlimit.kill_mb = 1000
 
 (Or you can use the RUBY_KILL_MB environment variable)
+
+
+#### Forking
+
+When fork()ing in ruby 1.9, only the thread doing the fork keeps running in
+the child.  So you have to call Rmemlimit.setup in every child after
+forking, or GC won't be running at all.
 

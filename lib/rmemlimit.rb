@@ -5,18 +5,20 @@ class Rmemlimit
     attr_accessor :gc_mb, :kill_mb
     
     def gcthread
-      @gcthread ||= Thread.new do
-        loop do
-          mb = rss_mb
-          if kill_mb && mb > kill_mb
-            STDERR.puts "#{self}: Exceeded kill memory limit (#{mb} > #{kill_Mb} MB)"
-            Process.kill(9, $$)
-          elsif gc_mb && mb > gc_mb
-            run_gc
-          elsif mb == 0 || !gc_mb || !kill_mb
-            run_gc
+      if !@gcthread || !@gcthread.alive?
+        @gcthread = Thread.new do
+          loop do
+            mb = rss_mb
+            if kill_mb && mb > kill_mb
+              STDERR.puts "#{self}: Exceeded kill memory limit (#{mb} > #{kill_Mb} MB)"
+              Process.kill(9, $$)
+            elsif gc_mb && mb > gc_mb
+              run_gc
+            elsif mb == 0 || !gc_mb || !kill_mb
+              run_gc
+            end
+            sleep 1
           end
-          sleep 1
         end
       end
     end
@@ -51,5 +53,3 @@ class Rmemlimit
   end
 
 end
-
-Rmemlimit.setup

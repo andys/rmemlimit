@@ -1,4 +1,5 @@
 require "#{File.dirname(__FILE__)}/../lib/rmemlimit"
+Rmemlimit.setup
 require 'test/unit'
 
 class TestRmemlimit < Test::Unit::TestCase
